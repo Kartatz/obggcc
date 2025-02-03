@@ -21,7 +21,7 @@ declare -r binutils_tarball='/tmp/binutils.tar.xz'
 declare -r binutils_directory='/tmp/binutils-2.43.1'
 
 declare -r gcc_tarball='/tmp/gcc.tar.gz'
-declare -r gcc_directory='/tmp/gcc-14.2.0'
+declare -r gcc_directory='/tmp/gcc-master'
 
 declare -r optflags='-Os'
 declare -r linkflags='-Wl,-s'
@@ -101,7 +101,7 @@ if ! [ -f "${binutils_tarball}" ]; then
 fi
 
 if ! [ -f "${gcc_tarball}" ]; then
-	wget --no-verbose 'https://ftp.gnu.org/gnu/gcc/gcc-14.2.0/gcc-14.2.0.tar.xz' --output-document="${gcc_tarball}"
+	wget --no-verbose 'https://github.com/gcc-mirror/gcc/archive/refs/heads/master.tar.gz' --output-document="${gcc_tarball}"
 	tar --directory="$(dirname "${gcc_directory}")" --extract --file="${gcc_tarball}"
 	
 	patch --directory="${gcc_directory}" --strip='1' --input="${workdir}/patches/0001-Revert-GCC-change-about-turning-Wimplicit-function-d.patch"
@@ -162,10 +162,10 @@ make all --jobs
 make install
 
 declare -ra targets=(
-	'powerpc-unknown-linux-gnu'
 	'aarch64-unknown-linux-gnu'
 	'mips-unknown-linux-gnu'
 	'mipsel-unknown-linux-gnu'
+	'powerpc-unknown-linux-gnu'
 	's390-unknown-linux-gnu'
 	's390x-unknown-linux-gnu'
 	'sparc-unknown-linux-gnu'
@@ -382,3 +382,4 @@ done <<< "$(jq --compact-output '.[]' "${workdir}/submodules/debian-sysroot/dist
 mkdir --parent "${share_directory}"
 
 cp --recursive "${workdir}/tools/dev/"* "${share_directory}"
+
